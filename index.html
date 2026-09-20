@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>X-NUKE // delete every tweet you ever posted</title>
+<meta name="description" content="A browser console script that deletes every post, reply and repost on your own X account. No signup, no 50-a-day limit, no data sold." />
+<meta property="og:title" content="X-NUKE" />
+<meta property="og:description" content="Delete every post, reply and repost on your own X account. Paste one script into the console and walk away." />
+<link rel="icon" href="./favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+<!-- ============ TICKER ============ -->
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-track">
+    <span>NO SIGNUP</span><span class="dot">✺</span><span>NO 50-A-DAY LIMIT</span><span class="dot">✺</span>
+    <span>NO DATA SOLD</span><span class="dot">✺</span><span>YOUR BROWSER, YOUR SESSION</span><span class="dot">✺</span>
+    <span>5,852 POSTS DELETED IN ONE RUN</span><span class="dot">✺</span>
+    <span>NO SIGNUP</span><span class="dot">✺</span><span>NO 50-A-DAY LIMIT</span><span class="dot">✺</span>
+    <span>NO DATA SOLD</span><span class="dot">✺</span><span>YOUR BROWSER, YOUR SESSION</span><span class="dot">✺</span>
+    <span>5,852 POSTS DELETED IN ONE RUN</span><span class="dot">✺</span>
+  </div>
+</div>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-left">
+      <div class="badge badge-pink wobble">☢ USE ON YOUR OWN ACCOUNT ONLY</div>
+      <h1 class="title">X<span class="dash">–</span>NUKE</h1>
+      <p class="lede">
+        Delete <strong>every post, reply and repost</strong> on your X account.
+        Paste one script into your browser console, click once, walk away.
+      </p>
+      <div class="cta-row">
+        <button class="btn btn-yellow" id="copy-hero">
+          <svg class="ico" viewBox="0 0 24 24"><rect x="8" y="3" width="13" height="16" rx="2"/><path d="M4 8v11a2 2 0 0 0 2 2h9"/></svg>
+          <span>COPY THE SCRIPT</span>
+        </button>
+        <a class="btn btn-cyan" href="#how">
+          <svg class="ico" viewBox="0 0 24 24"><path d="M12 3v14"/><path d="M6 12l6 6 6-6"/></svg>
+          <span>HOW IT WORKS</span>
+        </a>
+        <a class="btn btn-ink" href="https://github.com/git-pixel22/x-nuke" target="_blank" rel="noopener">
+          <svg class="ico ico-fill" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+          <span>GITHUB</span>
+        </a>
+      </div>
+      <p class="fineprint">Free. Open source. Runs entirely in your browser, nothing is sent anywhere.</p>
+    </div>
+
+    <div class="hero-right">
+      <div class="nuke-card">
+        <div class="nuke-face spin-slow">
+          <svg viewBox="0 0 120 120" class="radi">
+            <circle cx="60" cy="60" r="54" class="radi-bg"/>
+            <g class="radi-blades">
+              <path d="M60 60 L110 60 A50 50 0 0 1 85 103.3 Z"/>
+              <path d="M60 60 L35 103.3 A50 50 0 0 1 10 60 Z"/>
+              <path d="M60 60 L35 16.7 A50 50 0 0 1 85 16.7 Z"/>
+            </g>
+            <circle cx="60" cy="60" r="14" class="radi-core"/>
+          </svg>
+        </div>
+        <div class="counter-box">
+          <div class="counter-label">POSTS REMAINING</div>
+          <div class="counter" id="counter">5852</div>
+          <div class="counter-bar"><i id="counter-bar"></i></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ============ STATS ============ -->
+<section class="stats">
+  <div class="wrap stat-grid">
+    <div class="stat stat-lime reveal"><b>5,852</b><span>posts wiped in the run this was built from</span></div>
+    <div class="stat stat-yellow reveal"><b>0</b><span>failed deletions across ~5,850 API calls</span></div>
+    <div class="stat stat-cyan reveal"><b>5</b><span>profile tabs it sweeps, because X splits them up</span></div>
+    <div class="stat stat-pink reveal"><b>~800</b><span>deletes per hour, X's own ceiling</span></div>
+  </div>
+</section>
+
+<!-- ============ PROBLEM ============ -->
+<section class="band band-paper" id="why">
+  <div class="wrap">
+    <h2 class="h2"><span class="mark mark-yellow">THE PROBLEM</span></h2>
+    <div class="card-grid">
+      <article class="card reveal">
+        <div class="card-ico ico-red">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v6"/><circle cx="12" cy="16.5" r="1.2" fill="currentColor" stroke="none"/></svg>
+        </div>
+        <h3>Deleting by hand is impossible</h3>
+        <p>Three clicks per post. At 5,000 posts that is 15,000 clicks and several days of your life.</p>
+      </article>
+      <article class="card reveal">
+        <div class="card-ico ico-orange">
+          <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/><path d="M8 15h3"/></svg>
+        </div>
+        <h3>The paid tools cap you</h3>
+        <p>The popular cleanup services delete around <b>50 posts a day</b> on the free tier, then ask for a subscription and your account access.</p>
+      </article>
+      <article class="card reveal">
+        <div class="card-ico ico-purple">
+          <svg viewBox="0 0 24 24"><path d="M12 3l8 4v6c0 5-3.5 7.5-8 8-4.5-.5-8-3-8-8V7z"/><path d="M9 12l2 2 4-4"/></svg>
+        </div>
+        <h3>You hand over your account</h3>
+        <p>Those services need OAuth access to your account, forever, to do something your own browser can already do.</p>
+      </article>
+      <article class="card reveal">
+        <div class="card-ico ico-cyan">
+          <svg viewBox="0 0 24 24"><path d="M4 18V6"/><path d="M4 12h9"/><path d="M13 8l4 4-4 4"/><path d="M20 6v12"/></svg>
+        </div>
+        <h3>Other scripts stall out</h3>
+        <p>Most read one timeline, run out after a few hundred, and tell you to refresh and start again. Forever.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HOW ============ -->
+<section class="band band-yellow" id="how">
+  <div class="wrap">
+    <h2 class="h2"><span class="mark mark-ink">HOW TO USE IT</span></h2>
+    <p class="band-sub">Four steps. Takes about a minute to start.</p>
+
+    <ol class="steps">
+      <li class="step reveal">
+        <div class="step-n">1</div>
+        <div class="step-body">
+          <h3>Open your profile <span class="emoji">🪟</span></h3>
+          <p>In a desktop browser, logged in, go to:</p>
+          <code class="code-inline">https://x.com/<b>YOUR_HANDLE</b>/all</code>
+          <p class="note">The <b>/all</b> tab matters. It is the fullest view of your posting history.</p>
+        </div>
+      </li>
+      <li class="step reveal">
+        <div class="step-n">2</div>
+        <div class="step-body">
+          <h3>Open the console <span class="emoji">🧑‍💻</span></h3>
+          <p>Press <kbd>F12</kbd> (Windows/Linux) or <kbd>⌘</kbd>+<kbd>⌥</kbd>+<kbd>J</kbd> (Mac), then click the <b>Console</b> tab.</p>
+          <p class="note">First time pasting, Chrome makes you type <code>allow pasting</code> and hit Enter. That is Chrome protecting you from scams, and it is a good instinct. Read the script before you run it.</p>
+        </div>
+      </li>
+      <li class="step reveal">
+        <div class="step-n">3</div>
+        <div class="step-body">
+          <h3>Paste and run <span class="emoji">💣</span></h3>
+          <p>Paste the whole script, press Enter, then <b>click once anywhere on the page</b>.</p>
+          <p class="note">That click lets it play a silent tone, which stops your browser from throttling the tab when you switch windows.</p>
+          <button class="btn btn-ink btn-sm" id="copy-step"><span>COPY SCRIPT</span></button>
+        </div>
+      </li>
+      <li class="step reveal">
+        <div class="step-n">4</div>
+        <div class="step-body">
+          <h3>Walk away <span class="emoji">🚶</span></h3>
+          <p>It works through every tab on your profile by itself and stops when nothing is left. Keep the tab open and stop the machine from sleeping.</p>
+          <div class="cmd-row">
+            <code class="code-inline">XNUKE.status()</code><span>see progress</span>
+          </div>
+          <div class="cmd-row">
+            <code class="code-inline">XNUKE.stop()</code><span>stop it</span>
+          </div>
+        </div>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============ SCRIPT BOX ============ -->
+<section class="band band-ink" id="script">
+  <div class="wrap">
+    <h2 class="h2 h2-light"><span class="mark mark-lime">THE SCRIPT</span></h2>
+    <div class="term">
+      <div class="term-bar">
+        <span class="tdot td-red"></span><span class="tdot td-yellow"></span><span class="tdot td-green"></span>
+        <span class="term-title">x-nuke.js</span>
+        <span class="term-meta" id="script-size">—</span>
+      </div>
+      <pre class="term-body" id="script-preview"><code>loading…</code></pre>
+      <div class="term-actions">
+        <button class="btn btn-lime" id="copy-term">
+          <svg class="ico" viewBox="0 0 24 24"><rect x="8" y="3" width="13" height="16" rx="2"/><path d="M4 8v11a2 2 0 0 0 2 2h9"/></svg>
+          <span>COPY ALL</span>
+        </button>
+        <a class="btn btn-white" id="download" href="./x-nuke.js" download="x-nuke.js">
+          <svg class="ico" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="M7 11l5 5 5-5"/><path d="M4 20h16"/></svg>
+          <span>DOWNLOAD</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WHY IT WORKS ============ -->
+<section class="band band-paper" id="tech">
+  <div class="wrap">
+    <h2 class="h2"><span class="mark mark-cyan">WHY THIS ONE FINISHES</span></h2>
+    <p class="band-sub">Five things that were learned the hard way, wiping a real 5,852 post account.</p>
+
+    <div class="tech-grid">
+      <article class="tech reveal tech-wide">
+        <div class="tech-head"><span class="tech-ico">🗂️</span><h3>It visits every tab</h3></div>
+        <p>
+          This is the big one. X splits your profile across five surfaces, and they are backed by
+          <b>different API operations</b>. Point a script at one and it goes blind to the rest,
+          then reports "no posts found" while thousands remain.
+        </p>
+        <div class="tabs-demo">
+          <span class="tabchip tc-on">/all</span>
+          <span class="tabchip tc-on">Posts</span>
+          <span class="tabchip tc-on">Reposts</span>
+          <span class="tabchip tc-on">Media</span>
+          <span class="tabchip tc-on">Replies</span>
+        </div>
+        <p class="tech-foot">
+          <b>Gotcha:</b> <code>/with_replies</code> is the <i>Replies</i> tab, not "posts and replies".
+          Once your replies are gone it renders empty while your posts are untouched. That one cost a day.
+        </p>
+      </article>
+
+      <article class="tech reveal">
+        <div class="tech-head"><span class="tech-ico">🕸️</span><h3>Reads the API, not the screen</h3></div>
+        <p>
+          X recycles timeline elements as you scroll, so scraping the page catches only what is on
+          screen right now. This hooks the network layer and harvests every id X sends, including
+          the ones that scrolled away.
+        </p>
+      </article>
+
+      <article class="tech reveal">
+        <div class="tech-head"><span class="tech-ico">🏷️</span><h3>Survives renamed endpoints</h3></div>
+        <p>
+          X renames its internal operations. The Posts tab moved to
+          <code>UserOriginalsTimeline</code>, which silently broke matchers pinned to a fixed list.
+          This matches the <i>shape</i> of a timeline operation instead.
+        </p>
+      </article>
+
+      <article class="tech reveal">
+        <div class="tech-head"><span class="tech-ico">⏳</span><h3>Waits out rate limits exactly</h3></div>
+        <p>
+          X allows roughly <b>200 deletes per 15 minutes</b>, enforced server side. No script can beat
+          that. On a 429 this reads X's own reset header and sleeps precisely that long, then resumes.
+        </p>
+      </article>
+
+      <article class="tech reveal">
+        <div class="tech-head"><span class="tech-ico">🔋</span><h3>Keeps working in a background tab</h3></div>
+        <p>
+          Browsers throttle hidden tabs to one timer tick a minute. Timers here run in a Web Worker
+          and an inaudible tone keeps the tab active, so you can use other windows while it grinds.
+        </p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ============ EXPECT ============ -->
+<section class="band band-lime">
+  <div class="wrap">
+    <h2 class="h2"><span class="mark mark-ink">WHAT TO EXPECT</span></h2>
+    <div class="expect-grid">
+      <div class="expect reveal">
+        <span class="expect-ico">🐢</span>
+        <h3>It is slow, on purpose</h3>
+        <p>About <b>800 deletes an hour</b>. 5,000 posts is a <b>6 to 7 hour</b> job, mostly spent asleep between rate limit windows. Start it and go do something else.</p>
+      </div>
+      <div class="expect reveal">
+        <span class="expect-ico">😴</span>
+        <h3>Do not let the machine sleep</h3>
+        <p>A suspended laptop stops the run. On Linux: <code>systemd-inhibit --what=idle:sleep sleep 8h</code>. On Mac: <code>caffeinate -i</code>.</p>
+      </div>
+      <div class="expect reveal">
+        <span class="expect-ico">🔢</span>
+        <h3>The counter lies at the end</h3>
+        <p>Your profile's post count is a cached number that lags days behind. It may read 5 while every tab is empty. Trust the tabs, not the counter.</p>
+      </div>
+      <div class="expect reveal">
+        <span class="expect-ico">🔁</span>
+        <h3>Run it twice</h3>
+        <p>If X throttles reads mid-run, some posts hide until it recovers. A second pass the next day catches stragglers.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ POWER MODE ============ -->
+<section class="band band-paper" id="power">
+  <div class="wrap">
+    <h2 class="h2"><span class="mark mark-purple">POWER MODE</span></h2>
+    <div class="power">
+      <div class="power-text reveal">
+        <p class="power-lede">Do not want to leave a console tab open for seven hours?</p>
+        <p>
+          The repo ships a <b>Python + Playwright driver</b>. It opens its own browser profile, logs
+          in once, injects the script, and babysits the whole thing: reinjecting after navigations,
+          riding out rate limits, retrying dropped wifi, and writing a summary when it finishes.
+        </p>
+        <div class="power-code">
+          <code>pip install playwright &amp;&amp; playwright install chrome</code>
+          <code>python3 driver/x-nuke-driver.py</code>
+        </div>
+        <p class="note">It never reads your saved passwords or cookie store. You log in yourself, in its window, once.</p>
+      </div>
+      <div class="power-side reveal">
+        <div class="log-box">
+          <div class="log-line"><span class="log-t">12:24</span> Round 1 on /all</div>
+          <div class="log-line"><span class="log-t">12:24</span> found 117 · deleted 50</div>
+          <div class="log-line log-ok"><span class="log-t">12:26</span> removed 117, failed 0</div>
+          <div class="log-line"><span class="log-t">12:26</span> count 151 → 33</div>
+          <div class="log-line"><span class="log-t">12:28</span> moving to reposts</div>
+          <div class="log-line log-ok"><span class="log-t">12:40</span> account is clear <span class="blink">█</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ WARNING ============ -->
+<section class="band band-red">
+  <div class="wrap">
+    <div class="warn">
+      <div class="warn-ico">☠️</div>
+      <div>
+        <h2 class="warn-h">READ THIS BEFORE YOU RUN IT</h2>
+        <ul class="warn-list">
+          <li><b>Deletion is permanent.</b> There is no undo, no trash, no recovery. Nobody can get these back for you.</li>
+          <li><b>Want a copy first?</b> Settings → Your account → Download an archive of your data. It takes hours to prepare. Wait for it before running this.</li>
+          <li><b>Your own account only.</b> It uses your session and can only delete things you own. It cannot touch anyone else's posts.</li>
+          <li><b>Read the code.</b> It is 400 lines with comments. Never paste something into a console because a website told you to, including this one.</li>
+          <li><b>Unofficial API.</b> This uses X's internal endpoints, the same ones the website calls. They can change without notice and this may break.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="foot">
+  <div class="wrap foot-grid">
+    <div>
+      <div class="foot-logo">X–NUKE</div>
+      <p class="foot-p">Built while wiping a real account of 5,852 posts. Every gotcha on this page came from something breaking.</p>
+    </div>
+    <div class="foot-links">
+      <a class="btn btn-yellow btn-sm" id="copy-foot"><span>COPY SCRIPT</span></a>
+      <a class="btn btn-white btn-sm" href="./x-nuke.js" download><span>DOWNLOAD</span></a>
+      <a class="btn btn-cyan btn-sm" href="https://github.com/git-pixel22/x-nuke" target="_blank" rel="noopener">
+        <svg class="ico ico-fill" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg><span>SOURCE</span>
+      </a>
+    </div>
+  </div>
+  <div class="wrap foot-legal">
+    <p>MIT licensed. Not affiliated with, endorsed by, or connected to X Corp. Use at your own risk on your own account.</p>
+    <a class="credit" href="https://github.com/git-pixel22" target="_blank" rel="noopener">
+      <span class="credit-heart">♥</span>
+      <span>made with care by <b>Rajat</b></span>
+      <svg class="ico ico-fill" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+    </a>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite">
+  <span class="toast-ico">✔</span><span id="toast-msg">Copied to clipboard</span>
+</div>
+
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>
