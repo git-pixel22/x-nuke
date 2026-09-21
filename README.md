@@ -18,13 +18,43 @@ below came from something breaking during that run.
 4. Leave the tab open
 
 ```js
-XNUKE.status()   // progress
-XNUKE.stop()     // stop after the delete in flight
+XNUKE.status()    // progress
+XNUKE.stop()      // stop after the delete in flight
+XNUKE.archive()   // clear community posts, see below
 ```
 
 The first time you paste into Chrome's console it makes you type `allow pasting`.
 That exists to protect you from scams and it is a good instinct. **Read the
 script before you run it.** It is ~400 commented lines.
+
+---
+
+## Community posts: the one thing no script can find
+
+**Posts you made inside an X Community do not appear on any profile tab and do
+not appear in search.** They live in their community's feed among every other
+member's posts. Nothing running in your browser can enumerate them, so no tool
+can delete what it cannot find. This is a hard limit, not a bug to fix.
+
+They delete perfectly well *once you know the id*. The id is the only missing
+piece, and exactly one place has it: the archive X gives you on request.
+
+1. Settings → Your account → **Download an archive of your data**
+2. Wait for the email (hours to a day), download and unzip
+3. Run the script, then type `XNUKE.archive()`
+4. Select `data/community-tweet.js` (you can add `data/tweets.js` too)
+
+It parses the ids and deletes them with the same rate limit handling as the
+main sweep.
+
+> Found the hard way. An account that had been swept until every tab was empty
+> and search returned nothing still held **17 community posts**, dating back
+> years. The archive's `tweets.js` was an empty array while
+> `community-tweet.js` had all 17 with their ids.
+
+**Useful side effect:** the archive is also how you *verify* a wipe. If
+`data/tweets.js` comes back as `window.YTD.tweets.part0 = [ ]`, every regular
+post and reply is genuinely gone, regardless of what your profile counter says.
 
 ---
 

@@ -167,6 +167,9 @@
           <div class="cmd-row">
             <code class="code-inline">XNUKE.stop()</code><span>stop it</span>
           </div>
+          <div class="cmd-row">
+            <code class="code-inline">XNUKE.archive()</code><span>clear community posts, see below</span>
+          </div>
         </div>
       </li>
     </ol>
@@ -286,6 +289,45 @@
         <span class="expect-ico">🔁</span>
         <h3>Run it twice</h3>
         <p>If X throttles reads mid-run, some posts hide until it recovers. A second pass the next day catches stragglers.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ COMMUNITY POSTS ============ -->
+<section class="band band-purple" id="communities">
+  <div class="wrap">
+    <h2 class="h2"><span class="mark mark-ink">THE ONE THING IT CANNOT FIND</span></h2>
+    <div class="comm">
+      <div class="comm-main reveal">
+        <p class="comm-lede">Posts you made inside an <b>X Community</b> are invisible to every script, including this one.</p>
+        <p>
+          They do not appear on <b>any</b> profile tab. They do not appear in search. They sit in their
+          community's feed, mixed in with every other member's posts. Nothing running in your browser
+          can list them, so no tool can delete what it cannot find.
+        </p>
+        <p class="comm-note">
+          They delete perfectly well <i>once you know the id</i>. The id is the only missing piece, and
+          exactly one place has it: the archive X gives you on request.
+        </p>
+        <div class="comm-steps">
+          <div class="comm-step"><span class="cs-n">1</span> Settings → Your account → <b>Download an archive of your data</b></div>
+          <div class="comm-step"><span class="cs-n">2</span> Wait for the email (hours), download and unzip it</div>
+          <div class="comm-step"><span class="cs-n">3</span> Run the script, then type <code>XNUKE.archive()</code></div>
+          <div class="comm-step"><span class="cs-n">4</span> Pick <code>data/community-tweet.js</code> from the unzipped folder</div>
+        </div>
+      </div>
+      <div class="comm-side reveal">
+        <div class="find-box">
+          <div class="find-h">WHERE YOUR POSTS HIDE</div>
+          <div class="find-row"><span class="fr-ok">✔</span> Posts tab <i>swept</i></div>
+          <div class="find-row"><span class="fr-ok">✔</span> Replies tab <i>swept</i></div>
+          <div class="find-row"><span class="fr-ok">✔</span> Reposts tab <i>swept</i></div>
+          <div class="find-row"><span class="fr-ok">✔</span> Media tab <i>swept</i></div>
+          <div class="find-row"><span class="fr-ok">✔</span> /all tab <i>swept</i></div>
+          <div class="find-row fr-miss"><span class="fr-no">✖</span> Community posts <i>archive only</i></div>
+        </div>
+        <p class="find-foot">Found the hard way: a wiped account still held <b>17</b> community posts that showed on no tab and in no search.</p>
       </div>
     </div>
   </div>

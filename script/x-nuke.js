@@ -20,6 +20,23 @@
  *  CONTROLS (type in the console any time)
  *    XNUKE.status()   how far along it is
  *    XNUKE.stop()     stop after the delete in flight
+ *    XNUKE.archive()  delete from a downloaded archive (see COMMUNITY POSTS)
+ *
+ *  ---------------------------------------------------------------------
+ *  COMMUNITY POSTS NEED YOUR ARCHIVE
+ *
+ *  Posts you made inside an X Community do NOT appear on any profile tab
+ *  and do NOT appear in search. Nothing in the browser can list them, so no
+ *  script can find them on its own. They are buried in their community's
+ *  feed among every other member's posts.
+ *
+ *  They delete perfectly well once you know the id, so:
+ *    1. Settings > Your account > Download an archive of your data
+ *    2. Wait for the email, download and unzip it
+ *    3. Run this script, then type  XNUKE.archive()
+ *    4. Pick  data/community-tweet.js  (and data/tweets.js if you like)
+ *
+ *  That file lists every community post you ever made, with its id.
  *
  *  ---------------------------------------------------------------------
  *  WHY THIS ONE WORKS WHEN OTHERS STALL
@@ -371,11 +388,79 @@
     }
   }
 
+  // ---------- delete a plain list of ids (used by archive mode) ----------
+  async function deleteIdList(ids, label) {
+    console.log(`%cX-NUKE: deleting ${ids.length} ids from ${label}`, 'color:#7c3aed;font-weight:bold');
+    let removed = 0, missing = 0, failed = 0;
+    for (let i = 0; i < ids.length; i++) {
+      if (stop) { console.log('X-NUKE: stopped.'); break; }
+      const r = await deleteTweet(ids[i]);
+      if (r.ok) { removed++; stats.deleted++; }
+      else if (r.gone) { missing++; stats.gone++; }
+      else if (r.stopped) break;
+      else { failed++; stats.failed++; failedIds.push(ids[i]); }
+      if ((i + 1) % 25 === 0) console.log(`  ... ${i + 1}/${ids.length}`);
+      await sleep(CFG.DELETE_DELAY_MS);
+    }
+    console.log(
+      `%cX-NUKE: ${label} finished. removed ${removed}, already gone ${missing}, failed ${failed}`,
+      'color:#15803d;font-weight:bold'
+    );
+    return { removed, missing, failed };
+  }
+
+  // ---------- archive mode ----------
+  // Community posts are invisible to every timeline and to search, so the
+  // only way to learn their ids is the archive X gives you on request.
+  async function archiveMode() {
+    stop = false;
+    console.log(
+      'X-NUKE: pick the data files from your unzipped archive.\n' +
+      '  data/community-tweet.js  = your community posts (nothing else can find these)\n' +
+      '  data/tweets.js           = everything else\n' +
+      'You can select more than one.'
+    );
+
+    const files = await new Promise((resolve) => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = '.js,.json,.txt';
+      input.multiple = true;
+      input.onchange = () => resolve([...input.files]);
+      input.click();
+    });
+    if (!files.length) { console.log('X-NUKE: nothing selected.'); return; }
+
+    const ids = new Set();
+    for (const file of files) {
+      const text = await file.text();
+      const start = text.indexOf('[');                 // strip the window.YTD... = prefix
+      if (start === -1) { console.warn(`  ${file.name}: not an archive data file, skipped.`); continue; }
+      let entries;
+      try {
+        entries = JSON.parse(text.slice(start));
+      } catch (e) {
+        console.warn(`  ${file.name}: could not parse (${e.message}), skipped.`);
+        continue;
+      }
+      let added = 0;
+      for (const entry of entries) {
+        const t = entry?.tweet ?? entry;
+        if (t?.id_str && !ids.has(t.id_str)) { ids.add(t.id_str); added++; }
+      }
+      console.log(`  ${file.name}: ${added} ids`);
+    }
+
+    if (!ids.size) { console.log('X-NUKE: no post ids found in those files.'); return; }
+    return deleteIdList([...ids], 'archive');
+  }
+
   // ---------- controls ----------
   window.XNUKE = {
     version: VERSION,
     status() { report(); return { ...stats, queued: queue.size, failedIds: failedIds.slice() }; },
     stop() { stop = true; console.log('X-NUKE: stopping after the delete in flight...'); },
+    archive() { return archiveMode(); },
   };
 
   console.log(
@@ -384,6 +469,7 @@
     'background:#f5ff00;color:#000;font-weight:bold;padding:3px 6px'
   );
   console.log('Click once on this page so the tab is not throttled. XNUKE.status() for progress, XNUKE.stop() to stop.');
+  console.log('Made posts inside an X Community? Those are invisible to every timeline. Run XNUKE.archive() with your downloaded archive.');
   console.log(`Working through: ${TABS.map((t) => t.replace('/', '') || 'posts').join(' -> ')}`);
 
   Promise.allSettled([crawler(), deleter()]).then((rs) => {
@@ -398,6 +484,10 @@
     console.log(
       'If your profile counter still shows a number, that counter is a cached aggregate and lags ' +
       'behind for a few days. What matters is whether posts still render on your tabs.'
+    );
+    console.log(
+      'Posts made inside X Communities are NOT covered by this sweep. They appear on no profile ' +
+      'tab and in no search. Download your archive and run XNUKE.archive() to clear those.'
     );
   });
 })();

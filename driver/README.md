@@ -21,3 +21,11 @@ session and need nothing from you.
 
 It does not read your normal browser profile, your saved passwords, or your
 cookie store.
+
+## Community posts
+
+The driver sweeps profile tabs only. Posts made inside X Communities appear on
+no tab and in no search, so nothing can enumerate them from the browser.
+
+Clear those from your downloaded archive instead: run the console script on your
+profile, then type `XNUKE.archive()` and select `data/community-tweet.js`.
